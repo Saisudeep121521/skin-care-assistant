@@ -112,11 +112,19 @@ def evaluate_sklearn_models(train_gen, val_gen):
 # LOAD MODEL FOR PREDICTIONS
 # -----------------------------
 @st.cache_resource
+@st.cache_resource
 def load_skin_model():
     if not os.path.exists(CNN_MODEL_PATH):
         st.error("❌ CNN model not found! Please train the model first.")
         return None
-    return load_model(CNN_MODEL_PATH)
+    try:
+        # Try normal load
+        return load_model(CNN_MODEL_PATH, compile=False)
+    except TypeError:
+        st.warning("⚠️ Legacy model detected, trying compatibility mode...")
+        from tensorflow.keras.models import load_model as legacy_load
+        return legacy_load(CNN_MODEL_PATH, compile=False, safe_mode=False)
+
 
 model = load_skin_model()
 
@@ -188,4 +196,5 @@ elif page == "Model Comparison":
 
     best_model = max(results, key=results.get)
     st.success(f"✅ Best model: **{best_model}** with {results[best_model]*100:.2f}% accuracy.")
+
 
