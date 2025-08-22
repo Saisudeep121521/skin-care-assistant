@@ -79,7 +79,7 @@ def extract_features(generator):
 # EVALUATE CNN
 # -----------------------------
 def evaluate_cnn(val_gen):
-    cnn_model = load_model(CNN_MODEL_PATH)
+    cnn_model = load_model(CNN_MODEL_PATH, compile=False)
     preds = cnn_model.predict(val_gen, verbose=0)
     Y_pred = np.argmax(preds, axis=1)
     Y_true = val_gen.classes
@@ -188,3 +188,4 @@ elif page == "Model Comparison":
 
     best_model = max(results, key=results.get)
     st.success(f"✅ Best model: **{best_model}** with {results[best_model]*100:.2f}% accuracy.")
+
